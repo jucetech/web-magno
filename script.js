@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, { threshold: 0.5 });
 
-  const statsSection = document.querySelector('.hero-stats');
+  const statsSection = document.querySelector('.hero-stats-bar');
   if (statsSection) statsObserver.observe(statsSection);
 
   // ── Scroll reveal animation ──
@@ -106,26 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   revealElements.forEach(el => revealObserver.observe(el));
 
-  // ── Hero floating particles ──
-  const particlesContainer = document.getElementById('heroParticles');
-  if (particlesContainer) {
-    for (let i = 0; i < 20; i++) {
-      const particle = document.createElement('div');
-      const size = Math.random() * 3 + 1;
-      particle.style.cssText = `
-        position: absolute;
-        width: ${size}px;
-        height: ${size}px;
-        background: rgba(200,164,92,${Math.random() * 0.15 + 0.05});
-        border-radius: 50%;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 100}%;
-        animation: float ${Math.random() * 6 + 4}s ease-in-out infinite;
-        animation-delay: ${Math.random() * 4}s;
-      `;
-      particlesContainer.appendChild(particle);
-    }
-  }
 
   // ── Smooth scroll for all anchor links ──
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -176,12 +156,4 @@ document.addEventListener('DOMContentLoaded', () => {
     timelineObserver.observe(timelineLine.parentElement);
   }
 
-  // ── Parallax on hero ──
-  window.addEventListener('scroll', () => {
-    const hero = document.querySelector('.hero-content');
-    if (hero && window.scrollY < window.innerHeight) {
-      hero.style.transform = `translateY(${window.scrollY * 0.15}px)`;
-      hero.style.opacity = 1 - (window.scrollY / window.innerHeight) * 0.6;
-    }
-  }, { passive: true });
 });
