@@ -88,7 +88,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const revealElements = document.querySelectorAll(
     '.service-card, .method-step, .highlight-card, .presence-card, ' +
     '.value-item, .feature-item, .contact-card, .team-member, ' +
-    '.about-content, .about-visual, .why-us-content, .contact-form-wrapper'
+    '.about-content, .about-visual, .why-us-content, .contact-form-wrapper, ' +
+    '.gallery-item'
   );
 
   revealElements.forEach(el => el.classList.add('reveal'));
@@ -141,6 +142,81 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 3000);
     });
   }
+
+  // ── Gallery filters ──
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const galleryItems = document.querySelectorAll('.gallery-item');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.getAttribute('data-filter');
+
+      galleryItems.forEach(item => {
+        if (filter === 'all' || item.getAttribute('data-category') === filter) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // ── Lightbox ──
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+  const lightboxCounter = document.getElementById('lightboxCounter');
+  let currentLightboxIndex = 0;
+  let visibleImages = [];
+
+  const updateVisibleImages = () => {
+    visibleImages = Array.from(document.querySelectorAll('.gallery-item:not(.hidden) img'));
+  };
+
+  const openLightbox = (index) => {
+    updateVisibleImages();
+    currentLightboxIndex = index;
+    lightboxImg.src = visibleImages[index].src;
+    lightboxCounter.textContent = `${index + 1} / ${visibleImages.length}`;
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  const navigateLightbox = (dir) => {
+    currentLightboxIndex = (currentLightboxIndex + dir + visibleImages.length) % visibleImages.length;
+    lightboxImg.src = visibleImages[currentLightboxIndex].src;
+    lightboxCounter.textContent = `${currentLightboxIndex + 1} / ${visibleImages.length}`;
+  };
+
+  galleryItems.forEach(item => {
+    item.addEventListener('click', () => {
+      updateVisibleImages();
+      const img = item.querySelector('img');
+      const idx = visibleImages.indexOf(img);
+      if (idx !== -1) openLightbox(idx);
+    });
+  });
+
+  document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+  document.getElementById('lightboxPrev').addEventListener('click', () => navigateLightbox(-1));
+  document.getElementById('lightboxNext').addEventListener('click', () => navigateLightbox(1));
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') navigateLightbox(-1);
+    if (e.key === 'ArrowRight') navigateLightbox(1);
+  });
 
   // ── Timeline line animation ──
   const timelineLine = document.querySelector('.timeline-line');
